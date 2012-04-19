@@ -21,7 +21,7 @@ import org.powerbot.game.bot.event.listener.PaintListener;
 authors = {"Tutorial_Con"},
 description = "A Player-Killing Aid.",
 premium = false,
-version = 1.0D,
+version = 1.1D,
 website = "http://www.TutorialCon.com/")
 public class PKAid extends ActiveScript implements Task, Condition, PaintListener {
 
@@ -31,6 +31,12 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
     PKAidGUI GUI = null;
     PKAidGUI_Strategy GUI_Strategy = null;
 
+    /**
+     * Holds the GUI configuration in memory for future reference. <p> E.G: When
+     * checking what to paint.
+     *
+     * @author TutorialCon
+     */
     enum GUI_SETTINGS {
 
         BOUNDING_BOX,
@@ -94,14 +100,15 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
                     && (inWilderness())) {
                 for (Player p : players) {
                     if ((p != null) && (!p.equals(botter))) {
+                        Color col = colorForLevel(p);
                         if (GUI_SETTINGS.TILE.enabled() && p.getLocation().isOnScreen()) {
-                            drawTile(g, p.getLocation(), colorForLevel(p));
+                            drawTile(g, p.getLocation(), col);
                         }
                         if (GUI_SETTINGS.BOUNDING_BOX.enabled() && p.isOnScreen()) {
-                            drawPlayer(g, p, colorForLevel(p));
+                            drawPlayer(g, p, col);
                         }
                         if (GUI_SETTINGS.NAME_LEVEL.enabled() && p.isOnScreen()) {
-                            drawPlayerInformation(g, p, colorForLevel(p));
+                            drawPlayerInformation(g, p, col);
                         }
                     }
                 }
@@ -109,6 +116,17 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         }
     }
 
+    /**
+     * Colours in a tile with the specified colour. The outline colour will be
+     * the pure form of col where-as the contents of the tile will be col but
+     * with the alpha set to 80.
+     *
+     * @author TutorialCon
+     * @param g The graphics object to draw onto.
+     * @param tile The tile of which should be drawn.
+     * @param col The base colour of the tile to draw.
+     * @see Graphics2D
+     */
     public void drawTile(Graphics2D g, Tile tile, Color col) {
         for (Polygon poly : tile.getBounds()) {
             boolean drawThisOne = true;
@@ -128,6 +146,17 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         }
     }
 
+    /**
+     * Draws a coloured minimum bounding box (but with 5px added on all sides)
+     * around the specified player. The outline colour will be the pure form of
+     * col.
+     *
+     * @author TutorialCon
+     * @param g The graphics object to draw onto.
+     * @param player The player of which should be drawn.
+     * @param col The colour of the minimum bounding box.
+     * @see Graphics2D
+     */
     public void drawPlayer(Graphics2D g, Player player, Color col) {
         if (player.isOnScreen()) {
             Rectangle rect = getBoundingBox(player.getBounds());
@@ -138,6 +167,17 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         }
     }
 
+    /**
+     * Draws some information about the player above the player's head, this
+     * includes their level and name. The player's level colour is specified
+     * with the col parameter, the main text colour is white.
+     *
+     * @author TutorialCon
+     * @param g The graphics object to draw onto.
+     * @param player The player of which should be referenced.
+     * @param col The colour of the level text.
+     * @see Graphics2D
+     */
     public void drawPlayerInformation(Graphics2D g, Player player, Color col) {
         Rectangle boundingBox = getBoundingBox(player.getBounds());
         String playerName = player.getName();
@@ -159,6 +199,15 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         g.drawString(")", stringStartX + (int) nameWidth + (int) levelWidth, (int) boundingBox.getY());
     }
 
+    /**
+     * Returns a colour (green -> yellow -> red) based on a scale of -1.0F (red)
+     * to 1.0F (green).
+     *
+     * @author TutorialCon
+     * @param p The player of which should be referenced.
+     * @return The colour generated based on the level of the referenced player.
+     * @see #getScale(int difference, int max)
+     */
     public Color colorForLevel(Player p) {
         Player botter = Players.getLocal();
         float delta = getScale(p.getLevel() - botter.getLevel(), getWildernessLevel());
@@ -166,6 +215,14 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         return Color.getHSBColor((60.0F - 60.0F * delta) / 360.0F, 1F, 1F);
     }
 
+    /**
+     * Returns the specified player's minimum bounding box (but with 5px added
+     * on all sides).
+     *
+     * @author TutorialCon
+     * @param polys The Polygon[] to get the minimum bounding box from.
+     * @return The minimum bounding box of the supplied Polygon[].
+     */
     public Rectangle getBoundingBox(Polygon[] polys) {
         double minX = Double.MAX_VALUE;
         double minY = Double.MAX_VALUE;
@@ -189,15 +246,37 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         return new Rectangle((int) minX - 5, (int) minY - 5, (int) (maxX - minX) + 5, (int) (maxY - minY) + 5);
     }
 
+    /**
+     * This method is used to check whether or not the botter is in the
+     * wilderness.
+     *
+     * @author TutorialCon
+     * @return Whether or not the botter is within the wilderness.
+     */
     public boolean inWilderness() {
         return Widgets.get(381, 2).isVisible() ? true : false;
     }
 
+    /**
+     * This method is used to get the current wilderness level of the botter.
+     *
+     * @author TutorialCon
+     * @return The current wilderness level of the botter.
+     */
     public int getWildernessLevel() {
         return inWilderness() ? Integer.parseInt(
                 Widgets.get(381, 2).getText().replaceAll("Level: ", "")) : 0;
     }
 
+    /**
+     * Returns a simple scale from -1.0F to 1.0F based on a difference divided
+     * by a 0 to max range.
+     *
+     * @author TutorialCon
+     * @param difference The level difference between the botter and the player.
+     * @param max The maximum difference within the scale.
+     * @return A scale from -1.0F to 1.0F.
+     */
     public float getScale(int difference, int max) {
         if (difference == 0) {
             return 0F;
