@@ -17,6 +17,10 @@ import org.powerbot.game.api.wrappers.Tile;
 import org.powerbot.game.api.wrappers.interactive.Player;
 import org.powerbot.game.bot.event.listener.PaintListener;
 
+/**
+ * 
+ * @author TutorialCon
+ */
 @Manifest(name = "PKAid",
 authors = {"Tutorial_Con"},
 description = "A Player-Killing Aid.",
@@ -56,12 +60,19 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         }
     }
 
+    /**
+     * 
+     */
     protected void setup() {
         provide(new Strategy(this, this));
         GUI_Strategy = new PKAidGUI_Strategy();
         provide(GUI_Strategy);
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean validate() {
         return (GUI != null && !GUI.isVisible())
                 || (GUI_Strategy != null && !GUI_Strategy.validate());
@@ -89,6 +100,10 @@ public class PKAid extends ActiveScript implements Task, Condition, PaintListene
         Time.sleep(50);
     }
 
+    /**
+     * 
+     * @param grphcs
+     */
     public void onRepaint(Graphics grphcs) {
         if (Game.isLoggedIn()) {
             Graphics2D g = (Graphics2D) grphcs;
