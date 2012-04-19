@@ -26,6 +26,10 @@ import org.powerbot.game.api.wrappers.widget.Widget;
 import org.powerbot.game.api.wrappers.widget.WidgetChild;
 import org.powerbot.game.bot.event.listener.PaintListener;
 
+/**
+ * 
+ * @author TutorialCon
+ */
 @Manifest(name = "Lodestone Activator",
 authors = {"Tutorial Con"},
 version = 1.0D,
@@ -100,6 +104,9 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
     final SetupBot t_setupBot = new SetupBot();
     final CheckLodestones t_checkLodestones = new CheckLodestones();
 
+    /**
+     * 
+     */
     @Override
     protected void setup() {
         final Strategy a_setupBot = new Strategy(t_setupBot, t_setupBot);
@@ -118,6 +125,9 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         updateSettings();
     }
 
+    /**
+     * 
+     */
     public void updateSettings() {
         INTERFACE_MAIN = Widgets.get(548);
         TAB_INVENTORY = Widgets.get(548, 93);
@@ -248,6 +258,9 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         Time.sleep(50);
     }
 
+    /**
+     * 
+     */
     public void exit() {
         if (Tabs.getCurrent() != Tabs.LOGOUT) {
             TAB_LOGOUT.click(true);
@@ -258,6 +271,10 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         }
     }
 
+    /**
+     * 
+     * @return
+     */
     public WidgetChild[] getNextLodestoneF2P() {
         if (!isActivated(LODE_DRAYNOR)) {
             return new WidgetChild[]{LODE_LUMBRIDGE, LODE_DRAYNOR};
@@ -276,6 +293,11 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         }
     }
 
+    /**
+     * 
+     * @param wc
+     * @return
+     */
     public int getLodestoneID(WidgetChild wc) {
         if (wc == LODE_DRAYNOR) {
             return 69833;
@@ -292,6 +314,11 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         }
     }
 
+    /**
+     * 
+     * @param wc
+     * @return
+     */
     public Tile[] getWalkPath(WidgetChild wc) {
         if (wc == LODE_DRAYNOR) {
             return new Tile[]{
@@ -359,6 +386,12 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         }
     }
 
+    /**
+     * 
+     * @param tile
+     * @param rnd
+     * @return
+     */
     public boolean walkTileMM(Tile tile, int rnd) {
         double angle = angleTo(tile) - Camera.getAngleTo(0);
         double distance = distanceTo(tile);
@@ -369,16 +402,31 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         return Mouse.click(x + dx, y - dy, true);
     }
 
+    /**
+     * 
+     * @param tile
+     * @return
+     */
     public int distanceTo(Tile tile) {
         return (int) Calculations.distance(Players.getLocal().getLocation(), tile);
     }
 
+    /**
+     * 
+     * @param tile
+     * @return
+     */
     public int angleTo(Tile tile) {
         double ydif = tile.getY() - Players.getLocal().getLocation().getY();
         double xdif = tile.getX() - Players.getLocal().getLocation().getX();
         return (int) (Math.atan2(ydif, xdif) * 180 / Math.PI);
     }
 
+    /**
+     * 
+     * @param wc
+     * @return
+     */
     public boolean isActivated(WidgetChild wc) {
         for (int i = 0; i < w_done.length; i++) {
             if (w_done[i] == wc) {
@@ -388,6 +436,10 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         return false;
     }
 
+    /**
+     * 
+     * @param wc
+     */
     public void homePort(WidgetChild wc) {
         // Switch to the correct tab
         if (Tabs.getCurrent() != Tabs.MAGIC) {
@@ -411,6 +463,10 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         }
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getLodestonesLeft() {
         int count = 0;
         for (Boolean b : b_done) {
@@ -421,6 +477,9 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         return count;
     }
 
+    /**
+     * 
+     */
     public void deepLodestoneUpdate() {
         // Switch to the correct tab
         if (Tabs.getCurrent() != Tabs.MAGIC) {
@@ -444,6 +503,9 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         }
     }
 
+    /**
+     * 
+     */
     public void updateLodestones() {
         for (int i = 0; i < b_done.length; i++) {
             if (w_done[i].getTextureId() == t_done[i]) {
@@ -522,6 +584,10 @@ public class LodestoneActivator extends ActiveScript implements Task, PaintListe
         }
     }
 
+    /**
+     * 
+     * @param gra
+     */
     public void onRepaint(Graphics gra) {
         Graphics2D g = (Graphics2D) gra;
         Point clientCursor = Mouse.getLocation();
